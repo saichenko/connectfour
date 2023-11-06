@@ -1,8 +1,9 @@
+import copy
+
 from core import BoardAbstract, Move, Player
 from exceptions import (MoveIsNotValidError, NoPlacesLeftError,
                         PlaceIsOccupiedError, PlayerAlreadyExistsError,
                         PlayersAmountExceededError)
-import copy
 
 
 class Board(BoardAbstract):
@@ -10,10 +11,10 @@ class Board(BoardAbstract):
     WIDTH = 4
     HEIGHT = 4
     PLAYERS_AMOUNT = 2
-    IS_GRAVITY_ENABLED = True
     POINTS_TO_WIN = 4
 
-    def __init__(self):
+    def __init__(self, is_gravity_enabled: bool):
+        self.__is_gravity_enabled = is_gravity_enabled
         self.__players: list[Player] = []
         self.__board: list[list[Move | None]] = [
             [None] * self.WIDTH
@@ -67,9 +68,8 @@ class Board(BoardAbstract):
 
     def __check_places_left(self) -> bool:
         for row in self.__board:
-            for cell in row:
-                if cell is None:
-                    return True
+            if any(map(lambda x: x is None, row)):
+                return True
         return False
 
     def check_winner(self) -> Player | None:
@@ -87,7 +87,7 @@ class Board(BoardAbstract):
         if (n < 0 or n >= self.HEIGHT) or (m < 0 or m >= self.WIDTH):
             raise MoveIsNotValidError
 
-        if not self.IS_GRAVITY_ENABLED:
+        if not self.__is_gravity_enabled:
             if self.__board[n][m] is not None:
                 raise PlaceIsOccupiedError
             self.__board[n][m] = Move(player=player)
@@ -96,7 +96,6 @@ class Board(BoardAbstract):
         if not any(map(lambda x: x is None, self.__board[n])):
             raise PlaceIsOccupiedError
 
-        # for n_dem in range(self.HEIGHT):
         for m_dem in range(self.WIDTH):
             if self.__board[n][m_dem] is None:
                 self.__board[n][m_dem] = Move(player=player)

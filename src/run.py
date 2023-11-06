@@ -3,7 +3,8 @@ from game import Board, Player
 
 
 def main():
-    board = Board()
+    gravity_input = input("Do you want to enable gravity? (y/n): ")
+    board = Board(is_gravity_enabled=gravity_input == "y")
     player_one = Player(name=input("Please enter player one name: "))
     player_two = Player(name=input("Please enter player two name: "))
 
@@ -13,7 +14,8 @@ def main():
         print("— " * (len(board.board) ** 2))
         for board_row in board.board:
             print("|", end=" ")
-            print(" ".join(map(lambda p: str(p), board_row)))
+            row = map(lambda p: str(p) if p else "-", board_row)
+            print(" ".join(map(lambda p: str(p), row)))
 
         print(f"{current_player.name} turn")
         n = int(input("Please enter row number: "))
