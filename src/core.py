@@ -24,11 +24,20 @@ class BoardAbstract(abc.ABC):
     WIDTH: int
     HEIGHT: int
     PLAYERS_AMOUNT: int
-    PLAYERS: list[Player]
     IS_GRAVITY_ENABLED: bool
 
     @abc.abstractmethod
     def add_player(self, player: Player):
+        pass
+
+    @property
+    @abc.abstractmethod
+    def board(self) -> tuple[tuple[Move]]:
+        pass
+
+    @property
+    @abc.abstractmethod
+    def players(self) -> tuple[Player]:
         pass
 
     @abc.abstractmethod

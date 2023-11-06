@@ -2,6 +2,7 @@ from core import BoardAbstract, Move, Player
 from exceptions import (MoveIsNotValidError, NoPlacesLeftError,
                         PlaceIsOccupiedError, PlayerAlreadyExistsError,
                         PlayersAmountExceededError)
+import copy
 
 
 class Board(BoardAbstract):
@@ -13,7 +14,7 @@ class Board(BoardAbstract):
     POINTS_TO_WIN = 4
 
     def __init__(self):
-        self.players: list[Player] = []
+        self.__players: list[Player] = []
         self.__board: list[list[Move | None]] = [
             [None] * self.WIDTH
             for _ in range(self.HEIGHT)
@@ -21,17 +22,18 @@ class Board(BoardAbstract):
 
     @property
     def board(self) -> list[list[Move | None]]:
-        return self.__board
+        return copy.deepcopy(self.__board)
 
+    @property
     def players(self) -> tuple[Player]:
-        return tuple(self.players)
+        return tuple(self.__players)
 
     def add_player(self, player: Player):
-        if len(self.players) >= self.PLAYERS_AMOUNT:
+        if len(self.__players) >= self.PLAYERS_AMOUNT:
             raise PlayersAmountExceededError
-        if player in self.players:
+        if player in self.__players:
             raise PlayerAlreadyExistsError
-        self.players.append(player)
+        self.__players.append(player)
 
     def __check_vertical_winner(self) -> Player | None:
         board = self.__board
@@ -94,8 +96,8 @@ class Board(BoardAbstract):
         if not any(map(lambda x: x is None, self.__board[n])):
             raise PlaceIsOccupiedError
 
-        for n_dem in range(self.HEIGHT):
-            for m_dem in range(self.WIDTH):
-                if self.__board[n_dem][m_dem] is None:
-                    self.__board[n_dem][m_dem] = Move(player=player)
-                    return
+        # for n_dem in range(self.HEIGHT):
+        for m_dem in range(self.WIDTH):
+            if self.__board[n][m_dem] is None:
+                self.__board[n][m_dem] = Move(player=player)
+                return
